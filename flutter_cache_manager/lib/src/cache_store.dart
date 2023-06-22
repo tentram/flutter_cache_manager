@@ -181,8 +181,27 @@ class CacheStore {
       _futureCache.remove(cacheObject.key);
     }
     final file = await fileSystem.createFile(cacheObject.relativePath);
-    if (await file.exists()) {
-      await file.delete();
+
+    bool fileExists = false;
+
+    try {
+      fileExists = await file.exists();
+    } catch (e) {
+      cacheLogger.log(
+        'CacheManager: Failed to check if file exists: $e',
+        CacheManagerLogLevel.warning,
+      );
+    }
+
+    if (fileExists) {
+      try {
+        await file.delete();
+      } catch (e) {
+        cacheLogger.log(
+          'CacheManager: Failed to delete file: $e',
+          CacheManagerLogLevel.warning,
+        );
+      }
     }
   }
 
