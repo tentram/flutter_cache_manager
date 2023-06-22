@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:file/file.dart';
 import 'package:flutter/foundation.dart';

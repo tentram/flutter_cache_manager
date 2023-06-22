@@ -124,7 +124,7 @@ class CacheObjectProvider extends CacheInfoRepository
   @override
   Future<int> deleteAll(Iterable<int> ids) {
     return db!.delete(_tableCacheObject,
-        where: '${CacheObject.columnId} IN (' + ids.join(',') + ')');
+        where: '${CacheObject.columnId} IN (${ids.join(',')})');
   }
 
   @override

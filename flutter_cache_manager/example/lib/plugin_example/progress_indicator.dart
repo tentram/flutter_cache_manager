@@ -6,7 +6,10 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 class ProgressIndicator extends StatelessWidget {
   final DownloadProgress progress;
 
-  const ProgressIndicator({Key key, this.progress}) : super(key: key);
+  const ProgressIndicator({
+    Key? key,
+    required this.progress,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +21,7 @@ class ProgressIndicator extends StatelessWidget {
             width: 50.0,
             height: 50.0,
             child: CircularProgressIndicator(
-              value: progress?.progress,
+              value: progress.progress,
             ),
           ),
           const SizedBox(width: 20.0),

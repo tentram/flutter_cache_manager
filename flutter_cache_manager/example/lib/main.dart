@@ -1,6 +1,5 @@
 import 'package:baseflow_plugin_template/baseflow_plugin_template.dart';
 import 'package:example/plugin_example/download_page.dart';
-import 'package:example/plugin_example/floating_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
@@ -18,18 +17,20 @@ const url = 'https://blurha.sh/assets/images/img1.jpg';
 
 /// Example [Widget] showing the functionalities of flutter_cache_manager
 class CacheManagerPage extends StatefulWidget {
-  const CacheManagerPage({Key key}) : super(key: key);
+  const CacheManagerPage({
+    Key? key,
+  }) : super(key: key);
 
   static ExamplePage createPage() {
     return ExamplePage(Icons.save_alt, (context) => const CacheManagerPage());
   }
 
   @override
-  _CacheManagerPageState createState() => _CacheManagerPageState();
+  CacheManagerPageState createState() => CacheManagerPageState();
 }
 
-class _CacheManagerPageState extends State<CacheManagerPage> {
-  Stream<FileResponse> fileStream;
+class CacheManagerPageState extends State<CacheManagerPage> {
+  Stream<FileResponse>? fileStream;
 
   void _downloadFile() {
     setState(() {
@@ -39,16 +40,6 @@ class _CacheManagerPageState extends State<CacheManagerPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (fileStream == null) {
-      return Scaffold(
-        appBar: null,
-        body: const ListTile(
-            title: Text('Tap the floating action button to download.')),
-        floatingActionButton: Fab(
-          downloadFile: _downloadFile,
-        ),
-      );
-    }
     return DownloadPage(
       fileStream: fileStream,
       downloadFile: _downloadFile,
@@ -59,6 +50,7 @@ class _CacheManagerPageState extends State<CacheManagerPage> {
 
   void _clearCache() {
     DefaultCacheManager().emptyCache();
+
     setState(() {
       fileStream = null;
     });
