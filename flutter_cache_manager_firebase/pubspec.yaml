@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
   flutter_cache_manager:
     git:
-      url: https://github.com/usefulteam/flutter_cache_manager/
+      url: https://github.com/usefulteam/flutter_cache_manager
       ref: develop
       path: flutter_cache_manager
 
