@@ -14,7 +14,7 @@ class DownloadPage extends StatelessWidget {
 
   const DownloadPage({
     Key? key,
-    this.fileStream,
+    required this.fileStream,
     required this.downloadFile,
     required this.clearCache,
     required this.removeFile,
@@ -26,8 +26,7 @@ class DownloadPage extends StatelessWidget {
       stream: fileStream,
       builder: (context, snapshot) {
         Widget body;
-
-        var loading = !snapshot.hasData || snapshot.data is DownloadProgress;
+        final loading = !snapshot.hasData || snapshot.data is DownloadProgress;
 
         if (snapshot.hasError) {
           body = ListTile(
@@ -36,23 +35,20 @@ class DownloadPage extends StatelessWidget {
           );
         } else if (loading) {
           body = p_i.ProgressIndicator(
-              progress: snapshot.data as DownloadProgress);
+            progress: snapshot.data as DownloadProgress?,
+          );
         } else {
           body = FileInfoWidget(
-            fileInfo: snapshot.data as FileInfo,
+            fileInfo: snapshot.requireData as FileInfo,
             clearCache: clearCache,
             removeFile: removeFile,
           );
         }
 
         return Scaffold(
-          appBar: null,
           body: body,
-          floatingActionButton: !loading
-              ? Fab(
-                  downloadFile: downloadFile,
-                )
-              : null,
+          floatingActionButton:
+              !loading ? Fab(downloadFile: downloadFile) : null,
         );
       },
     );

@@ -17,7 +17,7 @@ class FileInfoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      children: <Widget>[
+      children: [
         ListTile(
           title: const Text('Original URL'),
           subtitle: Text(fileInfo.originalUrl),
