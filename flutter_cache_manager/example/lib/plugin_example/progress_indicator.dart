@@ -8,7 +8,7 @@ class ProgressIndicator extends StatelessWidget {
 
   const ProgressIndicator({
     Key? key,
-    required this.progress,
+    this.progress,
   }) : super(key: key);
 
   @override
@@ -21,7 +21,9 @@ class ProgressIndicator extends StatelessWidget {
             width: 50.0,
             height: 50.0,
             child: CircularProgressIndicator(
-              value: progress.progress,
+              value: progress != null && progress?.progress != null
+                  ? progress?.progress
+                  : null,
             ),
           ),
           const SizedBox(width: 20),
