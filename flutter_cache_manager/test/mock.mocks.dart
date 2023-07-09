@@ -91,7 +91,7 @@ class _FakeFileService_5 extends _i1.SmartFake implements _i4.FileService {
 class MockCacheInfoRepositoryBase extends _i1.Mock
     implements _i4.CacheInfoRepository {
   MockCacheInfoRepositoryBase() {
-    i1.throwOnMissingStub(this);
+    _i1.throwOnMissingStub(this);
   }
 
   @override
@@ -229,7 +229,7 @@ class MockCacheInfoRepositoryBase extends _i1.Mock
 /// See the documentation for Mockito's code generation for more information.
 class MockCacheStoreBase extends _i1.Mock implements _i6.CacheStore {
   MockCacheStoreBase() {
-    i1.throwOnMissingStub(this);
+    _i1.throwOnMissingStub(this);
   }
 
   @override
@@ -241,7 +241,7 @@ class MockCacheStoreBase extends _i1.Mock implements _i6.CacheStore {
         ),
       ) as Duration);
   @override
-  set cleanupRunMinInterval(Duration? cleanupRunMinInterval) =>
+  set cleanupRunMinInterval(Duration? _cleanupRunMinInterval) =>
       super.noSuchMethod(
         Invocation.setter(
           #cleanupRunMinInterval,
@@ -373,7 +373,7 @@ class MockCacheStoreBase extends _i1.Mock implements _i6.CacheStore {
 /// See the documentation for Mockito's code generation for more information.
 class MockFileServiceBase extends _i1.Mock implements _i4.FileService {
   MockFileServiceBase() {
-    i1.throwOnMissingStub(this);
+    _i1.throwOnMissingStub(this);
   }
 
   @override
@@ -417,7 +417,7 @@ class MockFileServiceBase extends _i1.Mock implements _i4.FileService {
 /// See the documentation for Mockito's code generation for more information.
 class MockWebHelper extends _i1.Mock implements _i7.WebHelper {
   MockWebHelper() {
-    i1.throwOnMissingStub(this);
+    _i1.throwOnMissingStub(this);
   }
 
   @override
