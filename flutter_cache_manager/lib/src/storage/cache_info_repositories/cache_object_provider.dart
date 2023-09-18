@@ -191,8 +191,14 @@ class CacheObjectProvider extends CacheInfoRepository
 
   @override
   Future<List<CacheObject>> getObjectsOverCapacity(int capacity) async {
-    return CacheObject.fromMapList(
-      await db!.query(
+    if (db == null) {
+      return [];
+    }
+
+    final List<Map<String, Object?>> mapList;
+
+    try {
+      mapList = await db!.query(
         _tableCacheObject,
         columns: null,
         orderBy: '${CacheObject.columnTouched} DESC',
@@ -204,8 +210,16 @@ class CacheObjectProvider extends CacheInfoRepository
         ],
         limit: 100,
         offset: capacity,
-      ),
-    );
+      );
+    } on DatabaseException {
+      // We can not read the file, so we assume it does not exist.
+      return [];
+    } catch (e) {
+      // We can not read the file, so we assume it does not exist.
+      return [];
+    }
+
+    return CacheObject.fromMapList(mapList);
   }
 
   @override

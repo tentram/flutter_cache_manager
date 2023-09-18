@@ -170,14 +170,45 @@ class CacheStore {
     final toRemove = <int>[];
     final provider = await _cacheInfoRepository;
 
-    final overCapacity = await provider.getObjectsOverCapacity(_capacity);
+    late final List<CacheObject> overCapacity;
+
+    try {
+      overCapacity = await provider.getObjectsOverCapacity(_capacity);
+    } catch (e) {
+      cacheLogger.log(
+        'CacheManager: Failed to read cache info from database: $e',
+        CacheManagerLogLevel.warning,
+      );
+
+      return;
+    }
+
     for (final cacheObject in overCapacity) {
       _removeCachedFile(cacheObject, toRemove);
     }
 
-    final oldObjects = await provider.getOldObjects(_maxAge);
-    for (final cacheObject in oldObjects) {
-      _removeCachedFile(cacheObject, toRemove);
+    late final List<CacheObject> oldObjects;
+
+    try {
+      oldObjects = await provider.getOldObjects(_maxAge);
+    } catch (e) {
+      cacheLogger.log(
+        'CacheManager: Failed to read cache info from database: $e',
+        CacheManagerLogLevel.warning,
+      );
+
+      return;
+    }
+
+    try {
+      for (final cacheObject in oldObjects) {
+        _removeCachedFile(cacheObject, toRemove);
+      }
+    } catch (e) {
+      cacheLogger.log(
+        'CacheManager: Failed to remove old cache objects: $e',
+        CacheManagerLogLevel.warning,
+      );
     }
 
     await provider.deleteAll(toRemove);
