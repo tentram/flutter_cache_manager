@@ -207,6 +207,10 @@ class CacheStore {
     }
   }
 
+  bool memoryCacheContainsKey(String key) {
+    return _memCache.containsKey(key);
+  }
+
   Future<void> dispose() async {
     if (_scheduledCleanup != null) {
       _scheduledCleanup?.cancel();
