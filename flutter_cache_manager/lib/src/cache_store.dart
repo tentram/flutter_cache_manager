@@ -91,28 +91,53 @@ class CacheStore {
 
   Future<FileInfo?> getFileFromMemory(String key) async {
     final cacheObject = _memCache[key];
+
     if (cacheObject == null) {
       return null;
     }
+
     final file = await fileSystem.createFile(cacheObject.relativePath);
+
     return FileInfo(
-        file, FileSource.Cache, cacheObject.validTill, cacheObject.url);
+      file,
+      FileSource.Cache,
+      cacheObject.validTill,
+      cacheObject.url,
+    );
   }
 
   Future<bool> _fileExists(CacheObject? cacheObject) async {
     if (cacheObject == null) {
       return false;
     }
+
     final file = await fileSystem.createFile(cacheObject.relativePath);
     return file.exists();
   }
 
   Future<CacheObject?> _getCacheDataFromDatabase(String key) async {
     final provider = await _cacheInfoRepository;
-    final data = await provider.get(key);
-    if (await _fileExists(data)) {
-      _updateCacheDataInDatabase(data!);
+    late final CacheObject? data;
+
+    try {
+      data = await provider.get(key);
+    } catch (e) {
+      cacheLogger.log(
+        'CacheManager: Failed to read cache info from database: $e',
+        CacheManagerLogLevel.warning,
+      );
+
+      return null;
     }
+
+    if (data == null) {
+      return null;
+    }
+
+    if (await _fileExists(data)) {
+      _updateCacheDataInDatabase(data);
+    }
+
     _scheduleCleanup();
     return data;
   }
@@ -121,6 +146,7 @@ class CacheStore {
     if (_scheduledCleanup != null) {
       return;
     }
+
     _scheduledCleanup = Timer(cleanupRunMinInterval, () {
       _scheduledCleanup = null;
       _cleanupCache();
