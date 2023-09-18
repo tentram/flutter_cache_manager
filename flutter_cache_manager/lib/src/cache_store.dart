@@ -208,6 +208,10 @@ class CacheStore {
   }
 
   Future<void> dispose() async {
+    if (_scheduledCleanup != null) {
+      _scheduledCleanup?.cancel();
+    }
+
     final provider = await _cacheInfoRepository;
     await provider.close();
   }
