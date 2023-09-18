@@ -52,11 +52,19 @@ class CacheStore {
 
   Future<void> putFile(CacheObject cacheObject) async {
     _memCache[cacheObject.key] = cacheObject;
-    final dynamic out = await _updateCacheDataInDatabase(cacheObject);
 
-    // We update the cache object with the id if returned by the repository
-    if (out is CacheObject && out.id != null) {
-      _memCache[cacheObject.key] = cacheObject.copyWith(id: out.id);
+    try {
+      final dynamic out = await _updateCacheDataInDatabase(cacheObject);
+
+      // We update the cache object with the id if returned by the repository
+      if (out is CacheObject && out.id != null) {
+        _memCache[cacheObject.key] = cacheObject.copyWith(id: out.id);
+      }
+    } catch (e) {
+      cacheLogger.log(
+        'CacheManager: Failed to update cache info in database: $e',
+        CacheManagerLogLevel.warning,
+      );
     }
   }
 

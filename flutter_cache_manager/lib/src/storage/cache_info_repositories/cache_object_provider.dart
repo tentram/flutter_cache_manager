@@ -100,12 +100,29 @@ class CacheObjectProvider extends CacheInfoRepository
   }
 
   @override
-  Future<CacheObject> insert(CacheObject cacheObject,
-      {bool setTouchedToNow = true}) async {
-    final id = await db!.insert(
-      _tableCacheObject,
-      cacheObject.toMap(setTouchedToNow: setTouchedToNow),
-    );
+  Future<CacheObject> insert(
+    CacheObject cacheObject, {
+    bool setTouchedToNow = true,
+  }) async {
+    if (db == null) {
+      return cacheObject;
+    }
+
+    late final int id;
+
+    try {
+      id = await db!.insert(
+        _tableCacheObject,
+        cacheObject.toMap(setTouchedToNow: setTouchedToNow),
+      );
+    } on DatabaseException {
+      // We can not read the file, so we assume it does not exist.
+      return cacheObject;
+    } catch (e) {
+      // We can not read the file, so we assume it does not exist.
+      return cacheObject;
+    }
+
     return cacheObject.copyWith(id: id);
   }
 
@@ -137,18 +154,26 @@ class CacheObjectProvider extends CacheInfoRepository
 
   @override
   Future<int> delete(int id) {
-    return db!.delete(_tableCacheObject,
-        where: '${CacheObject.columnId} = ?', whereArgs: [id]);
+    return db!.delete(
+      _tableCacheObject,
+      where: '${CacheObject.columnId} = ?',
+      whereArgs: [id],
+    );
   }
 
   @override
   Future<int> deleteAll(Iterable<int> ids) {
-    return db!.delete(_tableCacheObject,
-        where: '${CacheObject.columnId} IN (${ids.join(',')})');
+    return db!.delete(
+      _tableCacheObject,
+      where: '${CacheObject.columnId} IN (${ids.join(',')})',
+    );
   }
 
   @override
-  Future<int> update(CacheObject cacheObject, {bool setTouchedToNow = true}) {
+  Future<int> update(
+    CacheObject cacheObject, {
+    bool setTouchedToNow = true,
+  }) {
     return db!.update(
       _tableCacheObject,
       cacheObject.toMap(setTouchedToNow: setTouchedToNow),
@@ -166,33 +191,40 @@ class CacheObjectProvider extends CacheInfoRepository
 
   @override
   Future<List<CacheObject>> getObjectsOverCapacity(int capacity) async {
-    return CacheObject.fromMapList(await db!.query(
-      _tableCacheObject,
-      columns: null,
-      orderBy: '${CacheObject.columnTouched} DESC',
-      where: '${CacheObject.columnTouched} < ?',
-      whereArgs: [
-        DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch
-      ],
-      limit: 100,
-      offset: capacity,
-    ));
+    return CacheObject.fromMapList(
+      await db!.query(
+        _tableCacheObject,
+        columns: null,
+        orderBy: '${CacheObject.columnTouched} DESC',
+        where: '${CacheObject.columnTouched} < ?',
+        whereArgs: [
+          DateTime.now()
+              .subtract(const Duration(days: 1))
+              .millisecondsSinceEpoch
+        ],
+        limit: 100,
+        offset: capacity,
+      ),
+    );
   }
 
   @override
   Future<List<CacheObject>> getOldObjects(Duration maxAge) async {
-    return CacheObject.fromMapList(await db!.query(
-      _tableCacheObject,
-      where: '${CacheObject.columnTouched} < ?',
-      columns: null,
-      whereArgs: [DateTime.now().subtract(maxAge).millisecondsSinceEpoch],
-      limit: 100,
-    ));
+    return CacheObject.fromMapList(
+      await db!.query(
+        _tableCacheObject,
+        where: '${CacheObject.columnTouched} < ?',
+        columns: null,
+        whereArgs: [DateTime.now().subtract(maxAge).millisecondsSinceEpoch],
+        limit: 100,
+      ),
+    );
   }
 
   @override
   Future<bool> close() async {
     if (!shouldClose()) return false;
+
     await db!.close();
     return true;
   }
@@ -210,15 +242,19 @@ class CacheObjectProvider extends CacheInfoRepository
 
   Future<String> _getPath() async {
     Directory directory;
+
     if (_path != null) {
       directory = File(_path!).parent;
     } else {
       directory = await getApplicationSupportDirectory();
     }
+
     await directory.create(recursive: true);
+
     if (_path == null || !_path!.endsWith('.db')) {
       _path = join(directory.path, '$databaseName.db');
     }
+
     await _migrateOldDbPath(_path!);
     return _path!;
   }
@@ -226,6 +262,7 @@ class CacheObjectProvider extends CacheInfoRepository
   // Migration for pre-V2 path on iOS and macOS
   Future<void> _migrateOldDbPath(String newDbPath) async {
     final oldDbPath = join(await getDatabasesPath(), '$databaseName.db');
+
     if (oldDbPath != newDbPath && await File(oldDbPath).exists()) {
       try {
         await File(oldDbPath).rename(newDbPath);
